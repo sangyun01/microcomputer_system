@@ -1,5 +1,5 @@
     .data
-string: .ascis "The result is %08X(decimal : %d) \n"
+string: .asciz "The result is %08X(decimal : %d) \n"
 
     .text
     .global main
