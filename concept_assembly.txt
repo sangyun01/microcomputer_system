@@ -1,0 +1,61 @@
+:= 의 의미는 할당한다를 의미한다.
+mov r0, r2 @ r0 := r2
+
+gcc add.s -o a
+./a에서 a는 executable file을 의미한다.
+
+Operation & Operands Function
+- Arithmetic operations
+ADD r0, r1, r2 @ r0 := r1 + r2
+ADC r0, r1, r2 @ r0 := r1 + r2 + C
+SUB r0, r1, r2 @ r0 := r1 - r2
+SBC r0, r1, r2 @ r0 := r1 - r2 + C - 1
+RSB r0, r1, r2 @ r0 := r2 - r1
+RSC r0, r1, r2 @ r0 := r2 - r1 + C - 1
+
+C-> carry를 의미한다.
+R-> reverse를 의미한다.
+
+- Bit-wise Logical operations
+AND r0, r1, r2 @ r0 := r1 and r2
+ORR r0, r1, r2 @ r0 := r1 or r2
+EOR r0, r1, r2 @ r0 := r1 xor r2
+BIC r0, r1, r2 @ r0 := r1 and not r2
+
+- Register movement operations
+MOV r0, r2 @ r0 := r2
+MVN r0, r2 @ r0 := ~r2
+// MOV, MVN은 ARM이 3-address이지만, 2-address만 사용하고 r1(rn)은 omit으로 작동하게 본다.
+
+- Comparison operations(N-NULL, Z-ZERO, C-CARRY, V-OVERFLOW)
+CMP r1, r2 @ set cc on r1 - r2      // NZCV
+CMN r1, r2 @ set cc on r1 - (-r2) = r1 + r2  // NZCV
+TST r1, r2 @ set cc on r1 and r2    // NZ
+TEQ r1, r2 @ set cc on r1 xor r2    // NZ
+
+- Immediate Operands
+ADD r3, r3, #1 @ r3 = r3 + 1 // 1을 메모리 가지 않고 바로 값 대입
+AND r8, r7, #0xff @ r8 = r7 and 0xff
+
+Immediate는 (0~255)사이의 값의 2^2n 형태만 가능하다
+(0->255)X2^2n // 8bit value를 오른쪽으로 짝수 bit Rotate 가능하다.  255를 넘기면 Invalid
+
+- Shift Register Operands
+ex)
+ADD r3, r2, r1, LSL #3 @ r3 = r2 + r1 X (2X2X2)
+
+LSL @ 왼쪽으로 1bit이동 / *2씩 된다. 빈공간은 0으로
+LSR @ 오른쪽으로 1bit 이동 / *0.5 씩 된다. 빈공간은 0으로 
+ASL @ same as LSL, Thus 0 store
+ASR @ 부호(signed)를 유지하며, / *0.5를 한다. 빈공간은 원래 부호비트를 이용
+    @ ASR 0100(4) -> 0000 0010(2) / 1111 1000(-8) -> 1111 1100(-4)
+ROR @ Rotate Right : 오른쪽으로 이동 0bit는 31bit로 이동
+    @ 1001 0110 -> 0100 1011
+RRX @ 33bit Shifting / Rotate Right with CARRY
+    @ 0100 1011 C=1 -> 1010 0101 C=1(가장 오른쪽은 CARRY로 이동)
+
+condition codes
+ADDS r4, r0, r2 @ r0 + r2의 계산을 r4에 저장하고 CARRY가 발생했다면 1을 가져간다.
+ADD 후에 사용해도 결과가 동일할 수 있지만, ADDS를 다른곳에서 사용하게 되면 결과가 달라질 수 있다.
+ADC r5, r1, r3  @ r1 + r3의 계산에 CARRY값을 더하여 계산한다.
+ex.code locate file adc.s
