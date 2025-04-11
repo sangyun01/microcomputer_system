@@ -59,3 +59,39 @@ ADDS r4, r0, r2 @ r0 + r2의 계산을 r4에 저장하고 CARRY가 발생했다�
 ADD 후에 사용해도 결과가 동일할 수 있지만, ADDS를 다른곳에서 사용하게 되면 결과가 달라질 수 있다.
 ADC r5, r1, r3  @ r1 + r3의 계산에 CARRY값을 더하여 계산한다.
 ex.code locate file adc.s
+
+Register-indirect addressing
+[] => using when the data load or store
+
+ldr r0, [r1] => load the data where address r0 and input data r1
+str r0, [r1] => store the data value r0, where address r1
+
+Initializing an address pointer
+if we use the text section
+label_name  type    value
+TABLE1:     .WORD   0       @ (set integer 0 where TABLE1 array) / value 작성 X -> 쓰레기 값 저장
+TABLE2:     .SPACE  4       @ (allocate 4byte where TABLE2 array)/ 메모리에는 쓰레기 값 
+
+ADR은 근처에 있는 주소만 가져올 수 있다. 따라서 section이 다르다면 error가 발생한다.
+따라서 주소를 가져오는 LDR을 사용한다.
+
+.align(정렬)이 중요한 이유
+memory access는 4byte단위로 가능하다.
+따라서 만약 17byte이후, 데이터가 접근한다면 오류가 발생한다.
+따라서 20byte로 이동 후, 데이터가 접근하도록 정렬하는 과정이다.
+
+LDR form
+simple
+LDR r0, [r1, #4]
+r1+4의 주소에 있는 값을 r0에 저장한다.
+r1은 변화 X
+
+auto indexing
+LDR r0, [r1, #4]!
+r1 = r1 + 4
+r1+4의 주소에 있는 값을 r0에 저장한다.
+
+post-indexed
+LDR r0, [r1], #4
+r1의 주소에 있는 값을 r0에 저장한다.
+이후 r1 = r1 + 4의 연산을 진행한다.
