@@ -1,0 +1,157 @@
+Ch1.1 Processor Architecture and Organization
+- Comuter Architecture (컴퓨터 구조)
+It means user visible of computer
+ex. Instructions set, Register, Memory management table
+
+- Comuter Organization (컴퓨터 구성)
+It means user can't visible of computer
+ex. pipelined, cache memory, table-walking hardware
+
+The process about the stored-program digital computer (fetch)
+if pc address(FF0) -> through address bus, and access to memory where value of pc address(FF0)
+-> Instruction is located at pc address(FF0) -> Instruction through data bus and arrived IR
+(execute)
+after arrived IR, IR confirm the Instruction(OPCODE:4bit + OPERAND:12bit)
+where OPCODE stored the data ex. ADD LDA JMP etc.
+where OPERAND stored the memory address at where execute about opcode
+
+Ch1.2 Abstractio in hardware design
+what is the transistor???
+    maybe execute about Q.M, so complex electrical properties that can only be understood(그냥 양자역학적으로 되게 복잡한 특성을 가진 화학물질로 제작된 전지걱 특성을 가진 구조물 MOSFET)
+Levels of abstraction
+    pass
+
+Ch1.3 MU0 - a simple processor
+components of MU0
+- PC(program counter) : stored Instruction address
+- ACC(accumulator)  : stored the data about the calculate the data where ALU
+- ALU(arithmetic-logic-unit) : performs a number of operations on binary operations ex. ADD, SUB, and after we can know the using BSEL to increase PC address(fetch) or data increase(exe-add) of decrease(exe-sub)
+- IR(Instruction Register) : holds current Instruction 
+
+Instruction is consist 16 bit / 4bit(15~12) - OPCODE , 12bit(11~0) - OPERAND
+OPCODE is 4bit so can have the 16type but, MU0 has only 8type(LDA, STO, ADD, SUB, JMP, JGE, JNE, STP)
+
+I assume the C code c = a + b;
+when I explain the MU0 Instruction process
+c = a + b; - LDA A -> ADD B -> STO C(A를 가져와서 B를 더하고 이를 C에 저장한다.)
+-> : address bus, → : data bus, other
+PC -> memory(FF0) → IR(LDA A) -> memory(A) → ALU(a) → ACC(a) →
+PC(+1) -> memory(FF1) → IR(ADD B) -> memory(B) → ALU(a+b) → ACC(a+b) & PC(+2) 
+PC(+2) -> memory(FF2) → IR(STO C) → ACC(value a+b) → memory(c=a+b) : where C
+PC -> memory -> IR : fetch process
+IR -> memory -> ~~~ ex.ALU : execute process
+
+MU0 control logic
+Input 7bit / Output 10bit
+Input
+OPCODE(4bit) - before I already explain
+Reset(1bit) - only use reset process
+EX/FT(1bit) - current state is execute = 0 or fetch = 1
+ACC(Z,N : 1bit) - before the data store CMPR(N,Z,C,V), and use Zero and Negative
+
+Output
+Asel(1bit) - IR -> 1 / PC -> 0(암기 IR에서 나오면 1이고, PC에서 나오면 0이다.)
+BSEL(1bit) - IR -> 1 / PC -> 0(PC 주소가 올라가면 0, 값을 계산하면 1)
+ACCce(1bit) - Accumulator clockenable(그냥 ACC에 값이 들어오면? 1)
+PCce(1bit) - PC clockenable(PC에 값이 나가든 들어오면 1)
+IRce(1bit) - IR clockenable(IR에 값이 나가든 들어오면 1)
+ACCoe(1bit) - Accumulator Output enable(sto exe만 1)
+ALUfs(2bit) - ALU function(ALU에서 수행할 연산들, 주로 주소 관련(fetch)이면 B+1임, JMP류는 어차피 override할거라서 의미없지만, 조건 만족하지 않는다면, PC주소 + 1 해야해서 B+1)
+MEMrq(1bit) - memory request(STOP 뺴고 다 1(fetch, execute) 둘 다 접근하니까)
+RnW(1bit) - Read or Write(Read면 1, Write면 0 그래서 STO의 exe는 memory에 write니까 0이다.)
+EX/FT(1bit) - next state is ex? ft?(지금이 fetch? -> execute니까 0이고, execute? -> fetch니까 1이고, JMP류는 근데 fetch에서 시작해서 execute까지 해버려서 결국 fetch->execute->fetch라서 next는 exe라서 0)
+
+Ch1.4 Instruction set design
+4-address Instructions
+function(OPCODE) | Operand_1 address | Operand_2 address | destination address | next Instruction address
+It can be one line to execute and access next Instruction
+
+3-address Instruction
+function(OPCODE) | Operand_1 address | Operand_2 address | destination address | omit (next Instruction address)
+omit the next Instruction address because implict the Instruction address is pc address + 1
+
+2-address Instruction
+function(OPCODE) | Operand_1 address | Operand_2 address | omit(destination address) 
+we can omit the destination address to overried the Operand_1 address ex. a1 = a1 + a2
+
+1-address Instruction ex. MU0(16bit)
+function(opcode) | Operand_1 address | omit(Operand_2 address)
+we can omit the Operand_2 address because using the accumulator
+ACC = ACC + Operand_1 value
+
+0-address Instruction
+function(opcode) | omit(Operand_1 address)
+using the stack
+
+we can classify Instruction 4type
+Data Processing ex. ADD SUB
+Data movement   ex. LDA STO
+Control flow    ex. JMP, JGE, JNE
+Special         ex. RESET, STOP
+
+when the we apply the modes about branch and addressing ch3(ARM)
+Immediate addressing mov r5, #3
+Register addressing ldr r0, r5
+literal address ldr r0, =string1
+branch -> like move to label_name
+BAL(branch always) label_name
+~~
+label_name:
+    ~~come here to code, so must be using to stack process and store the Linked Register to return the PC
+
+system calls
+    we only understand about OS changing the privile Levels
+    so user can not be access like computer Architecture -> computer Organization
+exception
+    when the occur the error than the jump
+    like c++
+    if(i < 0 || i > n) {
+        throw(~~~);
+        cout << "errror" << endl;
+        return;
+    }
+
+Ch1.5 Processor design tradeoffs
+processor do Instruction data movement is major.
+not processor is major calculate..!!!(아 시험에 나오겟다~)
+
+then how to optimize the performance
+    using the pipeline -> parallel the inside process
+    using the cache momory -> rapid access to remain like substitude store place
+
+pipeline
+    parallel Instruction executtion step
+when not using the pipeline, using the time is so longer. when the number of Instruction is x than time is 6*x
+but using the pipeline x + 6 - 1, so about 6times faster than nonpipeline idealy
+ex. If the pipeline process is 6 / Instruction is 6
+nonpipeline -> 6*6 = 36 time
+pipeline
+[1][1][1][1][1][1]
+   [1][1][1][1][1][1]
+      [1][1][1][1][1][1]
+         [1][1][1][1][1][1]
+            [1][1][1][1][1][1]
+               [1][1][1][1][1][1] -> 11time done
+
+but using the pipeline then we consider the hazard
+hazard : Read after Write
+Register request the Instruction but, not execute the other Register than time delay the occur
+-> (명령어 2가 실행하려면 명령어 1이 필요한데 아직 명령어 1을 수행하지 않아서 작동을 하지 못하는 경우가 발생한다.)
+-> (LDA -> ADD면 LDA 전까지 ADD는 작동하지 못함.)
+It means 6times is incredible, but time efficient is already good.
+
+pipelined branch behavior
+if decode the instruction the opcode is JMP then, occur the branch so flush the memory and power
+so not execute instruction will be discarded.
+
+Ch1.6
+CISC vs RISC
+CISC : Complex Instruction Set Computer
+RISC : Reduced Instruction Set Computer
+
+CISC : code line is small, but complex the code (코드가 짧다. 근데 복잡하고, 코드짜기도 어렵고, 여러개의 연산을 동시에 한다.)
+multy clock cycle
+transistor used executing complex instruction.
+RISC : code line is large, bur easily to write code (코드가 길다. 하지만 쉽죠? 간단하죠? 하나의 연산은 다 독립적으로 따로 따로~)
+1 cycle
+transistor used memory Register.
