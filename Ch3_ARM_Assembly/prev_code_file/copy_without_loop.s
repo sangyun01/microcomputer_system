@@ -7,7 +7,7 @@ TABLE1: .word 10, 20, 30
 TABLE2: .word 0, 0, 0
 
     .text
-    .main global
+    .global main
     .extern printf
 
 main:
