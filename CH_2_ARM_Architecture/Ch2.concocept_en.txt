@@ -1,0 +1,45 @@
+Ch2.1 The ARM programmer's model
+we use the raspi, and raspi is ARM(32bit) // recently 64bit.
+
+ARM's visible registers
+we classify two type, usable in user mode and system modes only
+usable in user mode
+r0 ~ r15
+when using the printf function, it can only access r0 ~ r3, same as scanf
+alse want to using other register, using the stack
+r13 -> stack pointer, r14 -> link register, r15 -> program counter
+CPSR(31~28bit)
+NZCV
+N : Negative(15bit가 1이라면)
+Z : Zero(다 0이라면)
+C : Carry(Carry가 발생한다면 -> unsigned calculate)
+V : oVerflow(오버플로우가 발생한다면 -> signed calculate)
+r0 ~ r15 + CPSR -> 17 register
+
+system modes only
+fiq mode : when required the fast operate
+irq mode : normal
+
+data items
+byte : 8bit
+half-word : 16bit
+word : 32bit -> .word = int 4 byte
+
+if stored the "Hello world" than 
+ dlr
+ew o
+lleH <- byte address
+
+★not occur the calculate at memory★
+only memory occur the load and store, calculate at ALU.
+
+ARM is 3-address Instructions
+why? function(Opcode add) | Operand_1 address(r1) | Operand_2 address(r2) | destination address(r0) | (PC+1) // add r0, r1, r2 
+ARM register can be input and output
+input   ldr r0, [r5] // r5의 "주소"에 있는 "값"을 r0에 넣는다. 즉 r0는 값이다.
+output  str r0, [r5] // r0의 "값"을 r5의 "주소"에 있는 "값"으로 저장한다.
+
+ARM exceptions -> 교수님 曰 : 회사에서 열심히 해줬는데, 그냥 감탄만 하자. 이걸 알면 대학생이 아니다.
+
+Ch2.2 ARM development tools
+main.c(고급 언어) -> main.s(어셈블리어) -> main.o(객체 코드) -> main.elf(실행 코드)
