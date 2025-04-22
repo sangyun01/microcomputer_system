@@ -95,3 +95,52 @@ post-indexed
 LDR r0, [r1], #4
 r1의 주소에 있는 값을 r0에 저장한다.
 이후 r1 = r1 + 4의 연산을 진행한다.
+
+Multiple Register data
+It use usally STACK. -> STMFD, LDMFD
+LDM means Load Data Multiple
+STM means Store Data Multiple
+--
+I means increase, D means decrease
+A means after, B means before
+--
+using stack also has 4 variations
+F means full, E means empty
+A means ascending, D means descending
+
+STACK(LIFO) -Last Input First Output
+default of STACK is FD(Full Descending)
+
+when the decide the variations is based on STM
+So STMFD explain Register address is descending(decrease) when the push
+also LDMFD looks like Register address is ascending(increase) when the pop
+but STACK variations names is not LDMFA, It is based on "STM". So Don't confuse.
+
+LDMFD = LDMIA -> so Load the data fisrt Output
+STMFD = STMDB -> so store the data will be last Output, Full -> first initially empty the data
+r13 means stack pointer (sp) and ! means store the address variation
+so r13! only lastly variation like r13 = r13 + 12. not loop the r13 = r13 + 4
+also omit the r13! when the Function using push{} and pop{}
+
+Branch Instructions
+b-> branch, B=BAL(Branch always)
+we already using the branch linker. when bl printf, bl scanf
+SO BAL is not useful, so we usally use the condition branches
+cmp r1, r2 -> r1 - r2.
+we not consider the result about r1 - r2.
+but we must be consider CMPR(NZCV)
+if r1 > r2 => N = 0, Z = 0
+if r1 = r2 => N = 0, Z = 1
+if r1 < r2 => N = 1, Z = 0
+
+so B(condition 2 char) will be execute about our code.
+
+S-bit is when we using the ADS and ADC
+CMP ~~
+ADDNE ~~
+SUBNE ~~
+It effect the CMP result to execute ADD, SUB Function
+
+SUB Function
+using the stack, the reason why the function is return the address when before the execute function location
+
