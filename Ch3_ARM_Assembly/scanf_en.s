@@ -12,7 +12,7 @@ main:
     push {lr}
 
     ldr r0, =string1
-    ldr r1, =num
+    ldr r1, =num    @ user input the number, and store the value num address, [num] = user input value
     bl scanf
 
     ldr r0, =string2
