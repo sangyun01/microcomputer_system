@@ -1,6 +1,6 @@
 Ch3.1 Data Processing instructions
 all operands are 32 bit
-ARM uses 3-address functiom | operand_1 | operand_2 | destination | (PC+1)
+ARM uses 3-address function | operand_1 | operand_2 | destination | (PC+1)
 
 ADD r0, r1, r2 means result of r1+r2 allocate the r0
 C at ADC SBC RSC means Carry before calulate. CMPR register
@@ -17,8 +17,64 @@ RSC r0, r1, r2 -> r0 = r2 - r1 + C - 1      = 1111|1010
 r1 = 1111, r2 = 0011
 AND r0, r1, r2 -> r0 = r1 and r2            = 0011
 ORR r0, r1, r2 -> r0 = r1 or r2             = 1111
-EOR r0, r1, r2 -> r0 = r1 xor r2            = 1100
-BIC r0, r1, r2 -> r0 = r1 andnot r2         = 1100
+EOR r0, r1, r2 -> r0 = r1 xor r2            = 1100 // XOR : same as r1 r2 -> 0, diff r1 r2 -> 1
+BIC r0, r1, r2 -> r0 = r1 andnot r2         = 1100 // BIC : r1 and ~r2
 
-힘들어 
-모교일에 잠자기 전에 스택 전치 증가 이런거 좀 공부하고 호다다ㅏㄱ 끝내기
+mov r0, r2      -> r0 = r2
+mvn r0, r2      -> r0 = ~r2
+cmp r1, r2      -> r1 - r2
+cmn r1, r2      -> r1 + r2 / r1 - (-r2)
+tst r1, r2      -> r1 and r2
+teq r1, r2      -> r1 xor r2 => result 0 means r1 and r2 is equal
+
+Immediate = 0~255 * 2^2n where 0<=n<=12
+
+LSL : logical shift Left    -> << *2
+LSR : logical shift Right   -> >> /2
+ASL : arithmetic shift Left -> << *2
+ASR : arithmetic shift Right-> maintain sign bit / if positive value 00.. / negative value 11.. //thus when the positive value then same as LSR
+ROR : rotate right -> ex. 1001 | 0110 -> 0100 | 1011
+RRX : rotate right by extended C -> ex. 1001 | 0110 (if C=1) -> 1100 | 1011 (0)
+
+.WORD   -> 4byte integer type
+.SPACE  -> allocate space, not initialize value
+
+ADR -> cannot used other section -> It means when the define data section then cannot used code section.
+LDR -> It can be accessed allow other section. the reason why It basic the address
+
+offset addressing
+r0, [r1, #4] -> r0 = [r1 + 4] // one time
+r0, [r1, #4]!-> r0 = [r1 + 4] // loop, pre increase
+r0, [r1], #4 -> r0 = [r1] / r1 = r1 + 4 // post increase
+
+STACK(LIFO structure)
+IA : increase after    
+IB : increase before    
+DA : decrease after     
+DB : decrease before    
+---
+FA : Full ascending
+FD : Full desecending
+EA : Empty ascending
+ED : Empty desecending
+
+default(STACK) -> STMFD(STMDB), LDMFD(LDMIA)
+function name decide the STM process
+stmfd r13!, {r0-r4} // behind r4 -> r3 -> ... -> r0
+ldmfd r13!, {r0-r4} // front  r0 -> r1 -> ... -> r4
+r13! -> address updating when the loop occur
+|---------------------|
+|    lr -> {pc}       |
+| input1  r4  output5 | high
+| input2  r3  output4 |
+| input3  r2  output3 |
+| input4  r1  output2 |
+| input5  r0  output1 | low
+
+(conditional) Branch Instructions
+BL  -> branch link
+BAL -> branch always
+BLT -> branch less than
+BEQ -> branch equal
+so using the stack and subroutine than omit the process push {lr}, pop {pc} same as push {r14}, pop {r15}
+using the stmfd r13!, {r0-r12, r14}, ldmfd r13!, {r0-r12, pc} -> it prevent the overwrite the element value
