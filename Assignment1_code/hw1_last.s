@@ -51,7 +51,7 @@ addBits:
 	adds r3, r3, r7		@ r3 = r3 + r7 / CPSR -> C 저장
 	bl checkCarry 		@ checkCarry / C 고려한 계산 진행
 
-	str r3, [r1]	@ r3의 값을 r1에 overwrite하여 값 저장하고          // 수정
+	str r3, [r1, #4]	@ r3의 값을 r1에 overwrite하여 값 저장하고          // 수정
 
 	subs r4, r4, #1		@ r4 = r4 - 1	
 	bne addBits			@ 2 -> 1 -> 0(break) / 3번 진행
