@@ -98,11 +98,11 @@ printValues:
 	ldmfd sp!, {r0-r12,pc}		@ main r0~r15 복원
 
 checkCarry:	
-	stmfd sp! {r0-r2, r4-r12, lr} @ r3는 가져와서 
+	stmfd sp!, {r0-r2, r4-r12, lr} @ r3는 가져와서 
 	
 	adc r3, r3, #0	@ carry 발생하면 +1 해주기
 	
-	ldmfd sp! {r0-r2, r4-r12, lr} @ 변경 후 그대로 사용하기 위해 레지스터에서 제거거
+	ldmfd sp!, {r0-r2, r4-r12, pc} @ 변경 후 그대로 사용하기 위해 레지스터에서 제거거
 
 @ End of the program
 	.end
