@@ -41,17 +41,17 @@ main:
 
 	ldr r1, =data1 		@ data1 주소 r1에 저장
 	ldr r2, =data2		@ data2 주소 r2에 
-    add r1, r1, #8      // 추가
-    add r2, r2, #8      // 추가
+    add r1, r1, #8
+    add r2,
 
 addBits:
-	ldr r3, [r1], #-4	@ r1 / r1+4 / r1+8의 주소에 있는 값을 r3에 저장 // 수정
-	ldr r7, [r2], #-4	@ r2 / r2+4 / r2+8의 주소에 있는 값을 r7에 저장 // 수정
+	ldr r3, [r1], #4	@ r1 / r1+4 / r1+8의 주소에 있는 값을 r3에 저장
+	ldr r7, [r2], #4	@ r2 / r2+4 / r2+8의 주소에 있는 값을 r7에 저장
 
 	adds r3, r3, r7		@ r3 = r3 + r7 / CPSR -> C 저장
 	bl checkCarry 		@ checkCarry / C 고려한 계산 진행
 
-	str r3, [r1, #4]	@ r3의 값을 r1에 overwrite하여 값 저장하고          // 수정
+	str r3, [r1, #-4]	@ r3의 값을 r1에 overwrite하여 값 저장
 
 	subs r4, r4, #1		@ r4 = r4 - 1	
 	bne addBits			@ 2 -> 1 -> 0(break) / 3번 진행
@@ -102,6 +102,10 @@ printValues:
 checkCarry:	
 	stmfd sp!, {r0-r2, r4-r12, lr} @ r3는 가져와서 
 	
+    @ bal flag
+    @ flag:
+        @ 
+        ~~
 	adc r3, r3, #0	@ carry 발생하면 +1 해주기
 	
 	ldmfd sp!, {r0-r2, r4-r12, pc} @ 변경 후 그대로 사용하기 위해 레지스터에서 제거거
