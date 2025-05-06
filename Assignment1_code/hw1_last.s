@@ -2,6 +2,7 @@
 	.equ NUM, 3			@ input 3 num each data
 data1:	.word 0, 0, 0	@ input 1st
 data2:	.word 0, 0, 0	@ input 2nd
+data3: 	.word 0, 0, 0   @ output data
 
 hex:		.asciz "%X"
 dec:		.asciz "Data%d (%d). "
@@ -40,26 +41,26 @@ main:
 @ INSTRUNTION: Use a loop (addBits) and a subroutine (checkCarry) (+5pts)
 
 	ldr r1, =data1 		@ data1 주소 r1에 저장
-	ldr r2, =data2		@ data2 주소 r2에 
-    add r1, r1, #8
-    add r2,
+	ldr r2, =data2		@ data2 주소 r2에 저장
+	ldr r9, =data3		@ data3 주소 r3에 저장
+	adds r4, r4, #0		@ CMPR 초기화(C=0)
+	mov r5, #0			@ r5 = 0
 
 addBits:
 	ldr r3, [r1], #4	@ r1 / r1+4 / r1+8의 주소에 있는 값을 r3에 저장
 	ldr r7, [r2], #4	@ r2 / r2+4 / r2+8의 주소에 있는 값을 r7에 저장
 
-	adds r3, r3, r7		@ r3 = r3 + r7 / CPSR -> C 저장
 	bl checkCarry 		@ checkCarry / C 고려한 계산 진행
 
-	str r3, [r1, #-4]	@ r3의 값을 r1에 overwrite하여 값 저장
+	str r3, [r9], #4	@ r3의 값을 r1에 overwrite하여 값 저장
 
-	subs r4, r4, #1		@ r4 = r4 - 1	
+	subs r4, r4, #1		@ r4 = r4 - 1
 	bne addBits			@ 2 -> 1 -> 0(break) / 3번 진행
 
 @ result print function
 	ldr r0, =result		@ " =\t0x(%08X)(%08X)(%08X)\n\n" 
-	ldr r8, =data1		@ r1에 data overwrite해서 r8에 data1 주소 저장
-	ldmia r8, {r1-r3}	@ r8(data1)에 있는 즉, data1의 값들을 r1 ~ r3에 저장함
+	ldr r8, =data3		@ r8에 data3 주소 저장
+	ldmia r8, {r1-r3}	@ r8(data3)에 있는 즉, data3의 값들을 r1 ~ r3에 저장함
 
 	bl printf			@ print
 
@@ -99,16 +100,15 @@ printValues:
     
 	ldmfd sp!, {r0-r12,pc}		@ main r0~r15 복원
 
-checkCarry:	
-	stmfd sp!, {r0-r2, r4-r12, lr} @ r3는 가져와서 
-	
-    @ bal flag
-    @ flag:
-        @ 
-        ~~
-	adc r3, r3, #0	@ carry 발생하면 +1 해주기
-	
-	ldmfd sp!, {r0-r2, r4-r12, pc} @ 변경 후 그대로 사용하기 위해 레지스터에서 제거거
+checkCarry:				
+	stmfd sp!, {r0-r2, r4, r6-r12, lr} @ r3, r5는 가져와서
+
+	add r3, r3, r5		@ r3 = r3 + C(이전의 계산)
+	mov r5, #0			@ r5 = 0
+	adds r3, r3, r7		@ r3 = r3 + r7
+	adc r5, r5, #0		@ r5에 캐리 C = 0 or 1 저장
+
+	ldmfd sp!, {r0-r2, r4, r6-r12, lr} @ 변경 후 그대로 사용하기 위해 레지스터에서 제거
 
 @ End of the program
 	.end
