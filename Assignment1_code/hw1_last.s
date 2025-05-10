@@ -103,15 +103,20 @@ printValues:
     
 	ldmfd sp!, {r0-r12,pc}		@ main r0~r15 복원
 
-checkCarry:				
-	stmfd sp!, {r0-r2, r4, r6-r12, lr} @ r3, r5는 가져와서
+checkCarry:
+    stmfd sp!, {r0-r2, r4, r6-r12, lr}  @ r3, r5, r6, r7 사용 예정
 
-	add r3, r3, r5		@ r3 = r3 + C(이전의 계산)
-	mov r5, #0			@ r5 = 0
-	adds r3, r3, r7		@ r3 = r3 + r7
-	adc r5, r5, #0		@ r5에 캐리 C = 0 or 1 저장
+    mov   r6, #0
+    adds  r3, r3, r5      @ 이전 carry 먼저 반영 → C 플래그 설정
+    adc   r6, r6, #0      @ 첫 carry 발생 여부 → r6에 저장 (0 또는 1)
 
-	ldmfd sp!, {r0-r2, r4, r6-r12, pc} @ 변경 후 그대로 사용하기 위해 레지스터에서 제거
+    mov   r5, #0
+    adds  r3, r3, r7      @ 워드 덧셈 → C 플래그 설정
+    adc   r5, r5, #0      @ 워드 덧셈으로 인한 carry → r5에 저장
+
+    add   r5, r5, r6      @ 최종 carry = carry1 + carry2 (0~2까지 가능)
+
+    ldmfd sp!, {r0-r2, r4, r6-r12, pc}
 
 @ End of the program
 	.end
