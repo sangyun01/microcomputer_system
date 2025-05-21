@@ -1,0 +1,4 @@
+check the led where the circuit is correctly located
+gpio -g mode 18 out         : set output gpio pin 18
+gpio -g write 18 1 -> high  : LED On
+gpio -g write 18 0 -> low   : LED Off
