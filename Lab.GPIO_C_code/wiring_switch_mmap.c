@@ -1,5 +1,5 @@
 // write the terminal the code
-// $gcc wiring_switch_mmap.c -o wiring_switch_mmap
+// $gcc wiring_switch_mmap.c gpio.c -o wiring_switch_mmap
 // sudo ./wiring_switch_mmap
 
 #include <stdio.h>

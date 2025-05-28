@@ -42,7 +42,8 @@ void gpio_set(int gpio_no, char *mmap_addr) {
     int bit = gpio_no % 32;
 
     gpio_reg = (volatile unsigned int *)(mmap_addr + GPSET0_OFFSET + (reg_idx * 4));
-    return *gpio_reg & (1 << bit);}
+    *gpio_reg = (1 << bit);
+}
 
 void gpio_clear(int gpio_no, char *mmap_addr) {
     volatile unsigned int *gpio_reg = NULL;
@@ -50,7 +51,7 @@ void gpio_clear(int gpio_no, char *mmap_addr) {
     int bit = gpio_no % 32;
 
     gpio_reg = (volatile unsigned int *)(mmap_addr + GPCLR0_OFFSET + (reg_idx * 4));
-    return *gpio_reg & (1 << bit);
+    *gpio_reg = (1 << bit);
 }
 
 int wiringPiSetupGpio(void) {
